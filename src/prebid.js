@@ -1,6 +1,6 @@
 /** @module pbjs */
 
-// if pbjs already exists in global dodcument scope, use it, if not, create the object
+// if pbjs already exists in global document scope, use it, if not, create the object
 window.pbjs = (window.pbjs || {});
 window.pbjs.que = window.pbjs.que || [];
 var pbjs = window.pbjs;
@@ -28,6 +28,7 @@ var pb_bidderMap = {};
 var pb_targetingMap = {};
 var pb_keyHistoryMap = {};
 var pb_bidsTimedOut = false;
+var pb_sendAllBids = false;
 
 var eventValidators = {
   bidWon: checkDefinedPlacement
@@ -42,8 +43,8 @@ pbjs.logging = pbjs.logging || false;
 //let the world know we are loaded
 pbjs.libLoaded = true;
 
-//TODO: this should be auto generated from build
-utils.logInfo('Prebid.js v0.7.0 loaded');
+//version auto generated from build
+utils.logInfo('Prebid.js v$prebid.version$ loaded');
 
 //create adUnit array
 pbjs.adUnits = pbjs.adUnits || [];
@@ -212,13 +213,18 @@ function getWinningBid(bidArray) {
 
 function setGPTAsyncTargeting(code, slot) {
   //get the targeting that is already configured
-  var keyStrings = getTargetingfromGPTIdentifier(slot);
+  const keyStrings = getTargetingfromGPTIdentifier(slot);
+  const bids = pbjs.getBidResponses(slot.getAdUnitPath());
 
   //copy keyStrings into pb_keyHistoryMap by code
   if (!pb_keyHistoryMap[code]) {
     pb_keyHistoryMap[code] = keyStrings;
   } else {
     utils.extend(pb_keyHistoryMap[code], keyStrings);
+  }
+
+  if (pb_sendAllBids && bids && bids.bids && bids.bids.length) {
+    utils.extend(pb_keyHistoryMap[code], getTargetingKeysAsBidder(bids.bids));
   }
 
   utils._each(pb_keyHistoryMap[code], function (value, key) {
@@ -277,7 +283,9 @@ function buildBidResponse(bidArray) {
       if (bid.alwaysUseBid && bidClone.adserverTargeting) { // add the bid if alwaysUse and bid has returned
         // push key into targeting
         pb_targetingMap[bidClone.adUnitCode] = utils.extend(pb_targetingMap[bidClone.adUnitCode], bidClone.adserverTargeting);
-      } if (bid.cpm && bid.cpm > 0) {
+      }
+
+      if (bid.cpm && bid.cpm > 0) {
         //else put into auction array if cpm > 0
         bidArrayTargeting.push({
           cpm: bid.cpm,
@@ -325,8 +333,7 @@ function resetBids() {
   pb_bidsTimedOut = false;
 }
 
-function requestAllBids(tmout) {
-  var timeout = tmout;
+function requestAllBids(timeout) {
   resetBids();
   init(timeout);
 }
@@ -519,9 +526,28 @@ function getTargetingfromGPTIdentifier(slot) {
 }
 
 /**
+ * returns targeting keys with key name appended with the bidder code
+ * @param bidArray an array of current bid objects
+ */
+function getTargetingKeysAsBidder(bidArray) {
+  const standardKeys = CONSTANTS.TARGETING_KEYS;
+  let pairs = {};
 
+  // this assumes no key name collisions, which should not be possible,
+  // because bidder names are constrained by the adapter filename
+  // so uniqueness is enforced by the file system.
+  utils._each(bidArray, bid => {
+    if (bid.adserverTargeting) {
+      utils._each(standardKeys, key => {
+        pairs[`${key}_${bid.bidderCode}`] = bid.adserverTargeting[key];
+      });
+    }
+  });
 
- /**
+  return pairs;
+}
+
+/**
  * Set query string targeting on all GPT ad units.
  * @alias module:pbjs.setTargetingForGPTAsync
  */
@@ -599,7 +625,7 @@ pbjs.renderAd = function (doc, id) {
 };
 
 /**
- *	@deprecated - will be removed next release. Use pbjs.requestBids
+ *  @deprecated - will be removed next release. Use pbjs.requestBids
  */
 pbjs.requestBidsForAdUnit = function (adUnitCode) {
   resetBids();
@@ -965,6 +991,10 @@ pbjs.setPriceGranularity = function (granularity) {
   } else {
     bidmanager.setPriceGranularity(granularity);
   }
+};
+
+pbjs.enableSendAllBids = function () {
+  pb_sendAllBids = true;
 };
 
 processQue();
