@@ -366,7 +366,7 @@ var IndexExchangeAdapter = function IndexExchangeAdapter() {
       utils.logError('Too many unique sizes on slots, will use the first 20.', ADAPTER_NAME);
     }
 
-    bidmanager.setExpectedBidsCount(ADAPTER_CODE, expectedBids);
+    //bidmanager.setExpectedBidsCount(ADAPTER_CODE, expectedBids);
     adloader.loadScript(cygnus_index_start());
 
     var responded = false;
