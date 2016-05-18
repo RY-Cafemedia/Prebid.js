@@ -17,7 +17,13 @@ var cygnus_index_adunits =  [[728, 90], [120, 600], [300, 250], [160, 600], [336
 
 var cygnus_index_start = function () {
   window.index_slots = [];
-
+  if (typeof googletag !== 'undefined' && typeof googletag.pubads !== 'undefined' && typeof googletag.pubads().setTargeting === 'function') {
+    // Ensure old targeting is cleared
+    googletag.pubads().clearTargeting('O');
+    googletag.pubads().clearTargeting('P');
+    googletag.pubads().setTargeting('O', []);
+    googletag.pubads().setTargeting('P', []);
+  }
   window.cygnus_index_args.parseFn = cygnus_index_parse_res;
   var escapable = /[\\\"\x00-\x1f\x7f-\x9f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g;
   var meta = {
