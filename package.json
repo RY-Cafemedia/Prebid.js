@@ -11,23 +11,13 @@
     "url" : "https://github.com/prebid/Prebid.js.git"
   },
   "adapters": [
-    "adequant",
-    "adform",
     "aol",
     "appnexus",
     "criteo",
     "indexExchange",
-    "openx",
-    "pubmatic",
-    "pulsepoint",
     "rubicon",
     "sonobi",
-    "sovrn",
-    "springserve",
-    "triplelift",
     "yieldbot",
-    "nginad",
-    "brightcom",
     { "appnexus": {"alias": "brealtime"} },
     { "appnexus": {"alias": "pagescience"} }
   ],
