@@ -134,7 +134,7 @@ function getWinningBidTargeting() {
     };
   });
 
-  if(presets) {
+  if (presets) {
     winners.concat(presets);
   }
 
@@ -273,7 +273,7 @@ pbjs.getBidResponses = function () {
 pbjs.getBidResponsesForAdUnitCode = function (adUnitCode) {
   const bids = pbjs._bidsReceived.filter(bid => bid.adUnitCode === adUnitCode);
   return {
-    bids : bids
+    bids: bids
   };
 };
 
@@ -287,14 +287,21 @@ pbjs.setTargetingForGPTAsync = function () {
     utils.logError('window.googletag is not defined on the page');
     return;
   }
+
   window.googletag.pubads().getSlots().forEach(slot => {
     getAllTargeting()
-      .filter(targeting => Object.keys(targeting)[0] === slot.getAdUnitPath())
-      .forEach(targeting => targeting[Object.keys(targeting)[0]].forEach(key => {
-        key[Object.keys(key)[0]].forEach(value => slot.setTargeting(Object.keys(key)[0], value));
-      }));
+      .filter(targeting => Object.keys(targeting)[0] === slot.getAdUnitPath() ||
+        Object.keys(targeting)[0] === slot.getSlotElementId())
+      .forEach(targeting => targeting[Object.keys(targeting)[0]]
+        .forEach(key => {
+          key[Object.keys(key)[0]]
+            .map((value, index, array) => {
+              utils.logMessage(`Attempting to set key value for slot: ${slot.getSlotElementId()} key: ${Object.keys(key)[0]} value: ${value}`);
+              return value;
+            })
+            .forEach(value => slot.setTargeting(Object.keys(key)[0], value));
+        }));
   });
-
 };
 
 /**
@@ -395,8 +402,7 @@ pbjs.requestBids = function ({ bidsBackHandler, timeout }) {
 
   utils.logInfo('Invoking pbjs.requestBids', arguments);
 
-  // not sure of this logic
-  if (!pbjs.adUnits && pbjs.adUnits.length !== 0) {
+  if (!pbjs.adUnits || pbjs.adUnits.length === 0) {
     utils.logMessage('No adUnits configured. No bids requested.');
     return;
   }
