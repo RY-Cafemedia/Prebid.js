@@ -1,6 +1,6 @@
 /** @module pbjs */
 
-import { flatten, uniques, getKeys, isGptPubadsDefined } from './utils';
+import { flatten, uniques, getKeys, isGptPubadsDefined, getHighestCpm } from './utils';
 import 'polyfill';
 
 // if pbjs already exists in global document scope, use it, if not, create the object
@@ -26,6 +26,8 @@ var BID_TIMEOUT = CONSTANTS.EVENTS.BID_TIMEOUT;
 
 var pb_bidsTimedOut = false;
 var pb_sendAllBids = false;
+var auctionRunning = false;
+var presetTargeting = [];
 
 var eventValidators = {
   bidWon: checkDefinedPlacement
@@ -35,6 +37,7 @@ var eventValidators = {
 
 pbjs._bidsRequested = [];
 pbjs._bidsReceived = [];
+pbjs._adsReceived = [];
 
 //default timeout for all bids
 pbjs.bidderTimeout = pbjs.bidderTimeout || 2000;
@@ -101,10 +104,35 @@ function checkDefinedPlacement(id) {
   return true;
 }
 
-function getWinningBidTargeting() {
-  let presets;
+function resetPresetTargeting() {
   if (isGptPubadsDefined()) {
-    presets = (function getPresetTargeting() {
+    window.googletag.pubads().getSlots().forEach(slot => {
+      slot.clearTargeting();
+    });
+
+    setTargeting(presetTargeting);
+  }
+}
+
+function setTargeting(targetingConfig) {
+  window.googletag.pubads().getSlots().forEach(slot => {
+    targetingConfig.filter(targeting => Object.keys(targeting)[0] === slot.getAdUnitPath() ||
+      Object.keys(targeting)[0] === slot.getSlotElementId())
+      .forEach(targeting => targeting[Object.keys(targeting)[0]]
+        .forEach(key => {
+          key[Object.keys(key)[0]]
+            .map((value) => {
+              utils.logMessage(`Attempting to set key value for slot: ${slot.getSlotElementId()} key: ${Object.keys(key)[0]} value: ${value}`);
+              return value;
+            })
+            .forEach(value => slot.setTargeting(Object.keys(key)[0], value));
+        }));
+  });
+}
+
+function getWinningBidTargeting() {
+  if (isGptPubadsDefined()) {
+    presetTargeting = (function getPresetTargeting() {
       return window.googletag.pubads().getSlots().map(slot => {
         return {
           [slot.getAdUnitPath()]: slot.getTargetingKeys().map(key => {
@@ -123,7 +151,8 @@ function getWinningBidTargeting() {
         {
           adUnitCode: adUnitCode,
           cpm: 0,
-          adserverTargeting: {}
+          adserverTargeting: {},
+          timeToRespond: 0
         }));
 
   winners = winners.map(winner => {
@@ -135,15 +164,11 @@ function getWinningBidTargeting() {
     };
   });
 
-  if (presets) {
-    winners.concat(presets);
+  if (presetTargeting) {
+    winners.concat(presetTargeting);
   }
 
   return winners;
-
-  function getHighestCpm(previous, current) {
-    return previous.cpm < current.cpm ? current : previous;
-  }
 }
 
 function getBidLandscapeTargeting() {
@@ -191,12 +216,10 @@ pbjs.getAdserverTargetingForAdUnitCodeStr = function (adunitCode) {
 };
 
 /**
- * This function returns the query string targeting parameters available at this moment for a given ad unit. Note that some bidder's response may not have been received if you call this function too quickly after the requests are sent.
- * @param  {string} [adunitCode] adUnitCode to get the bid responses for
- * @alias module:pbjs.getAdserverTargetingForAdUnitCode
- * @return {object}  returnObj return bids
+* This function returns the query string targeting parameters available at this moment for a given ad unit. Note that some bidder's response may not have been received if you call this function too quickly after the requests are sent.
+ * @param adUnitCode {string} adUnitCode to get the bid responses for
+ * @returns {object}  returnObj return bids
  */
-
 pbjs.getAdserverTargetingForAdUnitCode = function (adUnitCode) {
   utils.logInfo('Invoking pbjs.getAdserverTargetingForAdUnitCode', arguments);
 
@@ -289,20 +312,7 @@ pbjs.setTargetingForGPTAsync = function () {
     return;
   }
 
-  window.googletag.pubads().getSlots().forEach(slot => {
-    getAllTargeting()
-      .filter(targeting => Object.keys(targeting)[0] === slot.getAdUnitPath() ||
-        Object.keys(targeting)[0] === slot.getSlotElementId())
-      .forEach(targeting => targeting[Object.keys(targeting)[0]]
-        .forEach(key => {
-          key[Object.keys(key)[0]]
-            .map((value, index, array) => {
-              utils.logMessage(`Attempting to set key value for slot: ${slot.getSlotElementId()} key: ${Object.keys(key)[0]} value: ${value}`);
-              return value;
-            })
-            .forEach(value => slot.setTargeting(Object.keys(key)[0], value));
-        }));
-  });
+  setTargeting(getAllTargeting());
 };
 
 /**
@@ -389,13 +399,39 @@ pbjs.removeAdUnit = function (adUnitCode) {
   }
 };
 
+pbjs.clearAuction = function() {
+  auctionRunning = false;
+  utils.logMessage('Prebid auction cleared');
+};
+
 /**
  *
  * @param bidsBackHandler
  * @param timeout
+ * @param adUnits
+ * @param adUnitCodes
  */
-pbjs.requestBids = function ({ bidsBackHandler, timeout }) {
+pbjs.requestBids = function ({ bidsBackHandler, timeout, adUnits, adUnitCodes }) {
+  if (auctionRunning) {
+    utils.logError('Prebid Error: `pbjs.requestBids` was called while a previous auction was' +
+      ' still running. Resubmit this request.');
+    return;
+  } else {
+    auctionRunning = true;
+    pbjs._bidsRequested = [];
+    pbjs._bidsReceived = [];
+    resetPresetTargeting();
+  }
+
   const cbTimeout = timeout || pbjs.bidderTimeout;
+
+  // use adUnits provided or from pbjs global
+  adUnits = adUnits || pbjs.adUnits;
+
+  // if specific adUnitCodes filter adUnits for those codes
+  if (adUnitCodes && adUnitCodes.length) {
+    adUnits = adUnits.filter(adUnit => adUnitCodes.includes(adUnit.code));
+  }
 
   if (typeof bidsBackHandler === objectType_function) {
     bidmanager.addOneTimeCallback(bidsBackHandler);
@@ -403,7 +439,7 @@ pbjs.requestBids = function ({ bidsBackHandler, timeout }) {
 
   utils.logInfo('Invoking pbjs.requestBids', arguments);
 
-  if (!pbjs.adUnits || pbjs.adUnits.length === 0) {
+  if (!adUnits || adUnits.length === 0) {
     utils.logMessage('No adUnits configured. No bids requested.');
     return;
   }
@@ -411,7 +447,7 @@ pbjs.requestBids = function ({ bidsBackHandler, timeout }) {
   //set timeout for all bids
   setTimeout(bidmanager.executeCallback, cbTimeout);
 
-  adaptermanager.callBids();
+  adaptermanager.callBids({ adUnits, adUnitCodes });
 };
 
 /**
