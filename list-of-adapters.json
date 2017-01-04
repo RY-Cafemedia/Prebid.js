@@ -1,0 +1,26 @@
+[
+    "aol",
+    "appnexus",
+    "indexExchange",
+    "kruxlink",
+    "rubicon",
+    "sonobi",
+    "sovrn",
+    "triplelift",
+    "yieldbot",
+    {
+      "appnexus": {
+        "alias": "brealtime"
+      }
+    },
+    {
+      "appnexus": {
+        "alias": "pagescience"
+      }
+    },
+    {
+      "rubicon": {
+        "alias": "rubiconLite"
+      }
+    }
+]
