@@ -1,0 +1,30 @@
+[
+    "aol",
+    "appnexus",
+    "appnexusAst",
+    "audienceNetwork",
+    "criteo",
+    "indexExchange",
+    "kruxlink",
+    "openx",
+    "rubicon",
+    "sonobi",
+    "sovrn",
+    "triplelift",
+    "yieldbot",
+    {
+      "appnexus": {
+        "alias": "brealtime"
+      }
+    },
+    {
+      "appnexus": {
+        "alias": "pagescience"
+      }
+    },
+    {
+      "rubicon": {
+        "alias": "rubiconLite"
+      }
+    }
+]
