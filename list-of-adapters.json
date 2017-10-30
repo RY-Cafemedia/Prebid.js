@@ -2,16 +2,15 @@
     "aol",
     "appnexus",
     "appnexusAst",
-    "audienceNetwork",
     "criteo",
     "indexExchange",
-    "kruxlink",
     "openx",
     "rubicon",
     "sonobi",
     "sovrn",
     "triplelift",
     "yieldbot",
+    "prebidServer",
     {
       "appnexus": {
         "alias": "brealtime"
@@ -20,6 +19,11 @@
     {
       "appnexus": {
         "alias": "pagescience"
+      }
+    },
+     {
+      "appnexus": {
+        "alias": "districtm"
       }
     },
     {
