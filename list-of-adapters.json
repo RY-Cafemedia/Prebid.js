@@ -1,0 +1,18 @@
+[
+    "aolBidAdapter",
+    "appnexusBidAdapter",
+    "appnexusAstBidAdapter",
+    "audienceNetworkBidAdapter",
+    "criteoBidAdapter",
+    "indexExchangeBidAdapter",
+    "openxBidAdapter",
+    "rubiconBidAdapter",
+    "sharethroughBidAdapter",
+    "sonobiBidAdapter",
+    "sovrnBidAdapter",
+    "tripleliftBidAdapter",
+    "trustxBidAdapter",
+    "yieldbotBidAdapter",
+    "prebidServerBidAdapter",
+    "googleAnalyticsAdapter"
+]
