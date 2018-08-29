@@ -5,6 +5,7 @@
     "audienceNetworkBidAdapter",
     "criteoBidAdapter",
     "indexExchangeBidAdapter",
+    "kargoBidAdapter",
     "openxBidAdapter",
     "rubiconBidAdapter",
     "sharethroughBidAdapter",
