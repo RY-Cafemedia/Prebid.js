@@ -244,14 +244,19 @@ export const spec = {
       if (typeof otherIxConfig.firstPartyData === 'object') {
         const firstPartyData = otherIxConfig.firstPartyData;
         let firstPartyString = '?';
+        let hashValues = '';
         for (const key in firstPartyData) {
           if (firstPartyData.hasOwnProperty(key)) {
-            firstPartyString += `${encodeURIComponent(key)}=${encodeURIComponent(firstPartyData[key])}&`;
+            if(key == 'last'){
+               hashValues = firstPartyData[key];
+            }else{
+              firstPartyString += `${encodeURIComponent(key)}=${encodeURIComponent(firstPartyData[key])}&`;
+            }
           }
         }
         firstPartyString = firstPartyString.slice(0, -1);
 
-        r.site.page += firstPartyString;
+        r.site.page += firstPartyString + hashValues;
       }
 
       // Create t in payload if timeout is configured.
