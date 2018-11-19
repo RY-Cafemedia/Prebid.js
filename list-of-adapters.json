@@ -14,5 +14,6 @@
     "trustxBidAdapter",
     "yieldbotBidAdapter",
     "prebidServerBidAdapter",
-    "googleAnalyticsAdapter"
+    "googleAnalyticsAdapter",
+    "pubmaticBidAdapter"
 ]
