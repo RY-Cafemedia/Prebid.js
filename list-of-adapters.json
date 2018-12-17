@@ -15,5 +15,6 @@
     "yieldbotBidAdapter",
     "prebidServerBidAdapter",
     "googleAnalyticsAdapter",
-    "pubmaticBidAdapter"
+    "pubmaticBidAdapter",
+    "rockyouAnalyticsAdapter"
 ]

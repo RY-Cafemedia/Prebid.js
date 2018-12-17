@@ -101,6 +101,10 @@ export function newAuction({adUnits, adUnitCodes, callback, cbTimeout, labels}) 
   let _timer;
   let _timeout = cbTimeout;
   let _winningBids = [];
+  let _bidRequestIds = {};
+
+  // create bid request ids for each ad unit
+  _adUnitCodes.forEach(code => _bidRequestIds[code] = utils.generateUUID());
 
   function addBidRequests(bidderRequests) { _bidderRequests = _bidderRequests.concat(bidderRequests) };
   function addBidReceived(bidsReceived) { _bidsReceived = _bidsReceived.concat(bidsReceived); }
@@ -298,6 +302,8 @@ export function newAuction({adUnits, adUnitCodes, callback, cbTimeout, labels}) 
     getAdUnitCodes: () => _adUnitCodes,
     getBidRequests: () => _bidderRequests,
     getBidsReceived: () => _bidsReceived,
+    getBidRequestId: (adUnitCode) => _bidRequestIds[adUnitCode],
+    getBidRequestIds: () => _bidRequestIds
   }
 }
 

@@ -93,6 +93,14 @@ export function newAuctionManager() {
     if (bid) bid.status = status;
   }
 
+  auctionManager.getLastAuction = function() {
+    if (_auctions.length == 0) {
+      return undefined;
+    }
+
+    return _auctions[_auctions.length - 1];
+  }
+
   function _addAuction(auction) {
     _auctions.push(auction);
   }
