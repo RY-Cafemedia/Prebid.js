@@ -16,5 +16,6 @@
     "prebidServerBidAdapter",
     "googleAnalyticsAdapter",
     "pubmaticBidAdapter",
-    "rockyouAnalyticsAdapter"
+    "rockyouAnalyticsAdapter",
+    "dfpAdServerVideo"
 ]
