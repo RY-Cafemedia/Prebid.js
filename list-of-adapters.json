@@ -17,5 +17,6 @@
     "googleAnalyticsAdapter",
     "pubmaticBidAdapter",
     "rockyouAnalyticsAdapter",
-    "districtmDmxBidAdapter"
+    "districtmDmxBidAdapter",
+    "dfpAdServerVideo"
 ]
