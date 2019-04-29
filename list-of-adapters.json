@@ -19,5 +19,6 @@
     "rockyouAnalyticsAdapter",
     "districtmDmxBidAdapter",
     "dfpAdServerVideo",
-    "synacormediaBidAdapter"
+    "synacormediaBidAdapter",
+    "optimeraBidAdapter"
 ]
