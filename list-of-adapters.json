@@ -18,5 +18,6 @@
     "pubmaticBidAdapter",
     "rockyouAnalyticsAdapter",
     "districtmDmxBidAdapter",
-    "dfpAdServerVideo"
+    "dfpAdServerVideo",
+    "synacormediaBidAdapter"
 ]
