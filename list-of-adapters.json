@@ -20,5 +20,6 @@
     "districtmDmxBidAdapter",
     "dfpAdServerVideo",
     "synacormediaBidAdapter",
-    "optimeraBidAdapter"
+    "optimeraBidAdapter",
+    "trionBidAdapter"
 ]
