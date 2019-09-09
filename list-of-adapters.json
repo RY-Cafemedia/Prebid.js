@@ -16,5 +16,6 @@
     "synacormediaBidAdapter",
     "optimeraBidAdapter",
     "trionBidAdapter",
-    "gumgumBidAdapter"
+    "gumgumBidAdapter",
+    "aardvarkBidAdapter"
 ]
