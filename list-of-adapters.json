@@ -17,5 +17,6 @@
     "optimeraBidAdapter",
     "trionBidAdapter",
     "gumgumBidAdapter",
-    "aardvarkBidAdapter"
+    "aardvarkBidAdapter",
+    "undertoneBidAdapter"
 ]
