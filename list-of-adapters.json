@@ -1,0 +1,22 @@
+[
+    "aolBidAdapter",
+    "appnexusBidAdapter",
+    "audienceNetworkBidAdapter",
+    "ixBidAdapter",
+    "kargoBidAdapter",
+    "openxBidAdapter",
+    "rubiconBidAdapter",
+    "tripleliftBidAdapter",
+    "prebidServerBidAdapter",
+    "googleAnalyticsAdapter",
+    "pubmaticBidAdapter",
+    "rockyouAnalyticsAdapter",
+    "districtmDMXBidAdapter",
+    "dfpAdServerVideo",
+    "synacormediaBidAdapter",
+    "optimeraBidAdapter",
+    "trionBidAdapter",
+    "gumgumBidAdapter",
+    "aardvarkBidAdapter",
+    "undertoneBidAdapter"
+]
