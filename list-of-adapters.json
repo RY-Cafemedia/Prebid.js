@@ -1,0 +1,17 @@
+[
+    "adpod", 
+    "appnexusBidAdapter", 
+    "prebidServerBidAdapter", 
+    "openxBidAdapter", 
+    "aolBidAdapter", 
+    "rubiconBidAdapter", 
+    "ixBidAdapter", 
+    "pubmaticBidAdapter", 
+    "kargoBidAdapter", 
+    "gumgumBidAdapter", 
+    "tripleliftBidAdapter", 
+    "gridBidAdapter", 
+    "medianetBidAdapter", 
+    "undertoneBidAdapter", 
+    "dfpAdServerVideo"
+]

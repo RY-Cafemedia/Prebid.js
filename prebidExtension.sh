@@ -1,0 +1,1 @@
+echo '\nwindow.canRunAds = true;' >> build/dist/prebid.js
